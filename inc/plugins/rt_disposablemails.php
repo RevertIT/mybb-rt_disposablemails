@@ -84,7 +84,7 @@ class RT_DisposableMails
 
     private const PLUGIN_DETAILS = [
         'name' => 'RT Disposable Mails',
-        'version' => '1.1',
+        'version' => '1.0',
         'prefix' => 'rt_disposablemails',
     ];
 
