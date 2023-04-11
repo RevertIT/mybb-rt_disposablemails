@@ -1,5 +1,5 @@
 ## RT Disposable Mails
-RT Disposable Mails is a plugin which checks an external API to retrieve filtered spam mails, and saves them into database periodically via tasks. it follows the strict type declaration and is future-proof for upcoming PHP versions.
+RT Disposable Mails is a plugin which checks an external API to retrieve filtered spam mails and saves them into cache. Then check based on settings if user can login/register.
 
 ### Table of contents
 
@@ -25,6 +25,8 @@ RT Disposable Mails is a plugin which checks an external API to retrieve filtere
 - Set time when task will run (in days)
 - Option to disable forum for users while task is running.
 - Safety checks will be shown while task is running to let you know not to uninstall/deactivate plugin.
+- Prevent users with disposable mail to register
+- Prevent users with disposable mail to login (If login method is set via mail)
 
 ### 🎉 Contribute
 Want to help with contributing new spam providers to the api list? Post it by [clicking here](https://github.com/RevertIT/disposable-email-domains/discussions/new?category=suggest-spam-providers).
