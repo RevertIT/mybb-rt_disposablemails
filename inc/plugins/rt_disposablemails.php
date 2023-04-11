@@ -23,6 +23,7 @@ RT_DisposableMails::autoload_plugin_hooks([
     'RT_DisposableMails_BackEnd'
 ]);
 
+print_r($cache->read(RT_DisposableMails::get_plugin_info('prefix') . '_total_chunks'));
 function rt_disposablemails_info(): array
 {
     return [
@@ -87,7 +88,7 @@ class RT_DisposableMails
         'website' => 'https://github.com/RevertIT/mybb-rt_disposablemails',
         'author' => 'RevertIT',
         'authorsite' => 'https://github.com/RevertIT/',
-        'version' => '1.2',
+        'version' => '1.1',
         'compatibility' => '18*',
         'codename' => 'rt_disposablemails',
         'prefix' => 'rt_disposablemails',
@@ -339,6 +340,7 @@ class RT_DisposableMails
         global $PL;
 
         $PL->settings_delete('rt_disposablemails', true);
+
     }
 
     /**
@@ -367,7 +369,7 @@ class RT_DisposableMails
 
         if (!empty($cache->read(self::PLUGIN_DETAILS['prefix'])))
         {
-            $cache->delete(self::PLUGIN_DETAILS['prefix']);
+            $cache->delete(self::PLUGIN_DETAILS['prefix'], true);
         }
     }
 
@@ -532,11 +534,18 @@ final class RT_DisposableMails_FrontEnd
 
         if (isset($mybb->settings['rt_disposablemails_disable_login']) && (int) $mybb->settings['rt_disposablemails_disable_login'] === 1)
         {
-            if (!empty($mybb->input['username']))
+            if (!empty($mybb->get_input('username')))
             {
-                if (RT_DisposableMails::is_banned_email($mybb->input['username']))
+                if (RT_DisposableMails::is_banned_email($mybb->get_input('username')))
                 {
-                    error($lang->sprintf($lang->rt_disposablemails_prevent_login, $mybb->input['username']), $lang->error);
+                    error($lang->sprintf($lang->rt_disposablemails_prevent_login, $mybb->get_input('username')), $lang->error);
+                }
+            }
+            elseif (!empty($mybb->get_input('quick_username')))
+            {
+                if (RT_DisposableMails::is_banned_email($mybb->get_input('quick_username')))
+                {
+                    error($lang->sprintf($lang->rt_disposablemails_prevent_login, $mybb->get_input('quick_username')), $lang->error);
                 }
             }
         }
