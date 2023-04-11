@@ -26,14 +26,14 @@ RT_DisposableMails::autoload_plugin_hooks([
 function rt_disposablemails_info(): array
 {
     return [
-        'name' => RT_DisposableMails::get_plugin_info('name'),
-        'description' => RT_DisposableMails::get_plugin_description(),
-        'website' => RT_DisposableMails::get_plugin_info('website'),
-        'author' => RT_DisposableMails::get_plugin_info('author'),
-        'authorsite' => RT_DisposableMails::get_plugin_info('authorsite'),
-        'version' => RT_DisposableMails::get_plugin_info('version'),
-        'compatibility' => RT_DisposableMails::get_plugin_info('compatibility'),
-        'codename' => RT_DisposableMails::get_plugin_info('codename'),
+        'name' => 'RT Disposable Mails',
+        'description' => RT_DisposableMails::plugin_description(),
+        'website' => 'https://github.com/RevertIT/mybb-rt_disposablemails',
+        'author' => 'RevertIT',
+        'authorsite' => 'https://github.com/RevertIT',
+        'version' => '1.0',
+        'compatibility' => '18*',
+        'codename' => 'rt_disposablemails',
     ];
 }
 
@@ -84,30 +84,9 @@ class RT_DisposableMails
 
     private const PLUGIN_DETAILS = [
         'name' => 'RT Disposable Mails',
-        'website' => 'https://github.com/RevertIT/mybb-rt_disposablemails',
-        'author' => 'RevertIT',
-        'authorsite' => 'https://github.com/RevertIT/',
         'version' => '1.1',
-        'compatibility' => '18*',
-        'codename' => 'rt_disposablemails',
         'prefix' => 'rt_disposablemails',
     ];
-
-    /**
-     * Get plugin details
-     *
-     * @param string $info Plugin info to return
-     * @return string|null
-     */
-    public static function get_plugin_info(string $info): ?string
-    {
-        if (isset(self::PLUGIN_DETAILS[$info]))
-        {
-            return self::PLUGIN_DETAILS[$info];
-        }
-
-        return null;
-    }
 
     /**
      * Autoload plugin hooks
@@ -140,7 +119,7 @@ class RT_DisposableMails
      *
      * @return string
      */
-    public static function get_plugin_description(): string
+    public static function plugin_description(): string
     {
         global $mybb, $db, $lang;
 

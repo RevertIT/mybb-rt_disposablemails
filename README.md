@@ -5,13 +5,14 @@ RT Disposable Mails is a plugin which checks an external API to retrieve filtere
 
 1. [❗ Dependencies](#-dependencies)
 2. [📃 Features](#-features)
-3. [➕ Installation](#-installation)
-4. [🔼 Update](#-update)
-5. [➖ Removal](#-removal)
-6. [💡 Feature request](#-feature-request)
-7. [🙏 Questions](#-questions)
-8. [🐞 Bug reports](#-bug-reports)
-9. [📷 Preview](#-preview)
+3. [🎉 Contribute](#-contribute)
+4. [➕ Installation](#-installation)
+5. [🔼 Update](#-update)
+6. [➖ Removal](#-removal)
+7. [💡 Feature request](#-feature-request)
+8. [🙏 Questions](#-questions)
+9. [🐞 Bug reports](#-bug-reports)
+10. [📷 Preview](#-preview)
 
 ### ❗ Dependencies
 - MyBB 1.8.x
@@ -24,6 +25,9 @@ RT Disposable Mails is a plugin which checks an external API to retrieve filtere
 - Set time when task will run (in days)
 - Option to disable forum for users while task is running.
 - Safety checks will be shown while task is running to let you know not to uninstall/deactivate plugin.
+
+### 🎉 Contribute
+Want to help with contributing new spam providers to the api list? Post it by [clicking here](https://github.com/RevertIT/disposable-email-domains/discussions/new?category=suggest-spam-providers).
 
 ### ➕ Installation
 1. Copy the directories from the plugin inside your root MyBB installation.
@@ -39,13 +43,13 @@ RT Disposable Mails is a plugin which checks an external API to retrieve filtere
 2. _Optional:_ Delete all the RT Disposable Mails plugin files from your MyBB folder.
 
 ### 💡 Feature request
-Open a new idea by [clicking here](https://github.com/RevertIT/mybb-disposablemails/discussions/new?category=ideas)
+Open a new idea by [clicking here](https://github.com/RevertIT/mybb-rt_disposablemails/discussions/new?category=ideas)
 
 ### 🙏 Questions
-Open a new question by [clicking here](https://github.com/RevertIT/mybb-disposablemails/discussions/new?category=q-a)
+Open a new question by [clicking here](https://github.com/RevertIT/mybb-rt_disposablemails/discussions/new?category=q-a)
 
 ### 🐞 Bug reports
-Open a new bug report by [clicking here](https://github.com/RevertIT/mybb-disposablemails/issues/new)
+Open a new bug report by [clicking here](https://github.com/RevertIT/mybb-rt_disposablemails/issues/new)
 
 ### 📷 Preview
 <img src="https://i.postimg.cc/yY85mcQv/rt1.png" alt="ss1"/>
