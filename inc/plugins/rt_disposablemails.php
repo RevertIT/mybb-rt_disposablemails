@@ -43,6 +43,7 @@ function rt_disposablemails_install(): void
     RT_DisposableMails::load_pluginlibrary();
 
     RT_DisposableMails::add_settings();
+    RT_DisposableMails::set_cache();
 }
 
 function rt_disposablemails_is_installed(): bool
@@ -56,6 +57,7 @@ function rt_disposablemails_uninstall(): void
     RT_DisposableMails::load_pluginlibrary();
 
     RT_DisposableMails::remove_settings();
+    RT_DisposableMails::remove_cache();
 }
 
 function rt_disposablemails_activate(): void
@@ -64,6 +66,7 @@ function rt_disposablemails_activate(): void
     RT_DisposableMails::load_pluginlibrary();
 
     RT_DisposableMails::add_settings();
+    RT_DisposableMails::set_cache();
 }
 
 function rt_disposablemails_deactivate(): void
@@ -77,6 +80,12 @@ class RT_DisposableMails
     private const API_PROVIDERS = [
         1 => 'https://raw.githubusercontent.com/ivolo/disposable-email-domains/master/index.json',
         2 => 'https://raw.githubusercontent.com/RevertIT/disposable-email-domains/master/index.json'
+    ];
+
+    private const PLUGIN_DETAILS = [
+        'name' => 'RT Disposable Mails',
+        'version' => '1.1',
+        'prefix' => 'rt_disposablemails',
     ];
 
     /**
@@ -116,15 +125,27 @@ class RT_DisposableMails
 
         $lang->load('rt_disposablemails');
 
+        // Plugin description
         $plugin_description = <<<DESCRIPTION
 		{$lang->rt_disposablemails_plugin_description}
 		DESCRIPTION;
 
+        // Check if new updates available
+        if (self::is_current() !== true)
+        {
+            $plugin_description = <<<DESCRIPTION
+            {$lang->rt_disposablemails_plugin_description}
+            {$lang->rt_disposablemails_plugin_update_required}
+            DESCRIPTION;
+        }
+
+        // Add plugin option links
         $plugin_description_extra = <<<OPTIONS
 		{$plugin_description}
 		{$lang->sprintf($lang->rt_disposablemails_plugin_description_extra, $mybb->post_code)}
 		OPTIONS;
 
+        // Check if task is active and add disclaimer
         if (isset($mybb->settings['rt_disposablemails_task_enabled']) && (int) $mybb->settings['rt_disposablemails_task_enabled'] === 1)
         {
             $query = $db->simple_select("tasks", "locked", "file = 'hourlycleanup' AND locked != '0'");
@@ -163,6 +184,25 @@ class RT_DisposableMails
         }
 
         return false;
+    }
+
+    /**
+     * Check if plugin is up-to-date
+     *
+     * @return bool
+     */
+    public static function is_current(): bool
+    {
+        global $cache;
+
+        $current = $cache->read(self::PLUGIN_DETAILS['prefix']);
+
+        if (!empty($current) && self::is_installed() && (version_compare(self::PLUGIN_DETAILS['version'], $current['version'], '>') || version_compare(self::PLUGIN_DETAILS['version'], $current['version'], '<')))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -267,6 +307,36 @@ class RT_DisposableMails
         global $PL;
 
         $PL->settings_delete('rt_disposablemails', true);
+    }
+
+    /**
+     * Set plugin cache
+     *
+     * @return void
+     */
+    public static function set_cache()
+    {
+        global $cache;
+
+        if (!empty(self::PLUGIN_DETAILS))
+        {
+            $cache->update(self::PLUGIN_DETAILS['prefix'], self::PLUGIN_DETAILS);
+        }
+    }
+
+    /**
+     * Delete plugin cache
+     *
+     * @return void
+     */
+    public static function remove_cache(): void
+    {
+        global $cache;
+
+        if (!empty($cache->read(self::PLUGIN_DETAILS['prefix'])))
+        {
+            $cache->delete(self::PLUGIN_DETAILS['prefix']);
+        }
     }
 
     /**
