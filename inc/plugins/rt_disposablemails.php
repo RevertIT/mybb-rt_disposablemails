@@ -87,7 +87,7 @@ class RT_DisposableMails
         'website' => 'https://github.com/RevertIT/mybb-rt_disposablemails',
         'author' => 'RevertIT',
         'authorsite' => 'https://github.com/RevertIT/',
-        'version' => '1.1',
+        'version' => '1.2',
         'compatibility' => '18*',
         'codename' => 'rt_disposablemails',
         'prefix' => 'rt_disposablemails',
@@ -294,10 +294,9 @@ class RT_DisposableMails
                 ],
                 "task_disableforum" => [
                     "title" => "Disable forum for users while task is running?",
-                    "description" => "This option will prevent visitors to use forum while task is running. This is a needed option because your database will have a heavy operation to do, you might get deadlocks or timeouts if you let users use forum.
-                    <br>Proceed with caution when disabling this. There will be at least 100k database queries while checking ban filters",
+                    "description" => "This option will prevent users to browse forum while task is running. It is not required as all data now is being stored in cache chunks and will finish up pretty quickly.",
                     "optionscode" => "yesno",
-                    "value" => 1
+                    "value" => 0
                 ],
                 "task_time" => [
                     "title" => "Time when task will run (in days)",
@@ -313,6 +312,18 @@ class RT_DisposableMails
 					<br>2. <a href='https://github.com/RevertIT/disposable-email-domains' target='_blank' rel='noreferrer'>RevertIT - Disposable email domains (Fork)</a>",
                     "optionscode" => "select\n1=Ivolo - Disposable email domains\n2=RevertIT - Disposable email domains (Frequent update)",
                     "value" => 2,
+                ],
+                "disable_register" => [
+                    "title" => "Prevent guests registering with banned/temporary mail",
+                    "description" => "This option will prevent guests from registering with temporary mail",
+                    "optionscode" => "yesno",
+                    "value" => 1
+                ],
+                "disable_login" => [
+                    "title" => "Prevent guests from logging with banned/temporary mails",
+                    "description" => "This option will prevent guests from registering with temporary mail",
+                    "optionscode" => "yesno",
+                    "value" => 0
                 ],
             ],
         );
@@ -380,6 +391,86 @@ class RT_DisposableMails
 
         return null;
     }
+
+    /**
+     * Save banlist
+     *
+     * Due to MyBB limitations we had to save our cache in chunks so that we could keep up the speed and avoid database errors.
+     *
+     * @param mixed $data
+     * @return void
+     */
+    public static function save_mail_list(array $data): void
+    {
+        global $cache;
+
+        $count_items = round(count((array) $data) / 3000);
+
+        $cache->update('rt_disposablemails_total_chunks', [
+            'cached_at' => TIME_NOW,
+            'count' => $count_items,
+        ]);
+
+        $chunks = array_chunk($data, 2000);
+
+        foreach ($chunks as $key => $chunk)
+        {
+            $cache->update('rt_disposablemails_chunk_' . $key, $chunk);
+        }
+    }
+
+    /**
+     * Read cached data in array chunks
+     *
+     * @return mixed
+     */
+    private static function read_cached_data(): mixed
+    {
+        global $cache;
+
+        $chunks = $cache->read('rt_disposablemails_total_chunks');
+
+        $emails = [];
+        if (!empty($chunks['count']))
+        {
+            for ($chunk = 0; $chunk <= $chunks['count']; $chunk++)
+            {
+                $emails[] = $cache->read('rt_disposablemails_chunk_' . $chunk);
+            }
+        }
+
+        return $emails;
+    }
+
+    /**
+     * Check if email is banned
+     *
+     * @param string $email
+     * @return bool
+     */
+    public static function is_banned_email(string $email): bool
+    {
+        $banned_mails = self::read_cached_data();
+
+        if(!empty($banned_mails))
+        {
+            foreach((array) $banned_mails as $chunks)
+            {
+                foreach ($chunks as $mail)
+                {
+                    // Make regular expression * match
+                    $mail = str_replace('\*', '(.*)', preg_quote($mail, '#'));
+
+                    if(preg_match("#{$mail}#i", $email))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }
 
 final class RT_DisposableMails_FrontEnd
@@ -391,22 +482,64 @@ final class RT_DisposableMails_FrontEnd
      */
     public function global_start(): void
     {
-        global $mybb, $db;
+        global $mybb, $cache;
 
         if (isset($mybb->settings['rt_disposablemails_task_enabled'], $mybb->settings['rt_disposablemails_task_disableforum']) &&
             (int) $mybb->settings['rt_disposablemails_task_enabled'] === 1 && (int) $mybb->settings['rt_disposablemails_task_disableforum'] === 1
         )
         {
-            $rt_disposable_mails_task_query = $db->simple_select("tasks", "locked", "file = 'hourlycleanup' AND locked != '0'");
-
-            $rt_disposable_mails_task_row =$db->fetch_field($rt_disposable_mails_task_query, 'locked');
-
-            if (!empty($rt_disposable_mails_task_row))
+            if (!empty($cache->read('rt_disposablemails_locked')))
             {
                 $mybb->settings['boardclosed'] = 1;
             }
         }
 
+    }
+
+    /**
+     * Hook: member_do_register_start
+     *
+     * @return void
+     */
+    public function member_do_register_start(): void
+    {
+        global $mybb, $lang;
+
+        $lang->load('rt_disposablemails');
+
+        if (isset($mybb->settings['rt_disposablemails_disable_register']) && (int) $mybb->settings['rt_disposablemails_disable_register'] === 1)
+        {
+            if (!empty($mybb->get_input('email')))
+            {
+                if (RT_DisposableMails::is_banned_email($mybb->get_input('email')))
+                {
+                    error($lang->sprintf($lang->rt_disposablemails_prevent_registration, $mybb->get_input('email')), $lang->error);
+                }
+            }
+        }
+    }
+
+    /**
+     * Hook: member_do_login_start
+     *
+     * @return void
+     */
+    public function member_do_login_start(): void
+    {
+        global $mybb, $lang;
+
+        $lang->load('rt_disposablemails');
+
+        if (isset($mybb->settings['rt_disposablemails_disable_login']) && (int) $mybb->settings['rt_disposablemails_disable_login'] === 1)
+        {
+            if (!empty($mybb->input['username']))
+            {
+                if (RT_DisposableMails::is_banned_email($mybb->input['username']))
+                {
+                    error($lang->sprintf($lang->rt_disposablemails_prevent_login, $mybb->input['username']), $lang->error);
+                }
+            }
+        }
     }
 
     /**
@@ -424,12 +557,10 @@ final class RT_DisposableMails_FrontEnd
         )
         {
             $rt_disposablemails_clean_time = TIME_NOW - (60 * 60 * 24 * (int) $mybb->settings['rt_disposablemails_task_time']);
-            $rt_query = $db->simple_select("banfilters", "dateline", "type = '3'", [
-                "order_by" => 'dateline',
-                "order_dir" => 'DESC',
-                "limit" => 1
-            ]);
-            $rt_last_entry = (int) $db->fetch_field($rt_query, 'dateline');
+
+            $chunks = $cache->read('rt_disposablemails_total_chunks');
+
+            $rt_last_entry = isset($chunks['cached_at']) ? (int) $chunks['cached_at'] : 0;
 
             // Heavy DB stress incoming, but this is the best way to make it multi-db engine compatible.
             // Finger point on you PSG and MariaDB
@@ -439,28 +570,12 @@ final class RT_DisposableMails_FrontEnd
 
                 if (!empty($api))
                 {
-                    foreach ($api as $row)
-                    {
-                        $row = '@' . $row;
-                        $rt_disposablemails_duplicate_check = $db->simple_select("banfilters", "filter", "type = '3' AND filter = '{$db->escape_string($row)}'", [
-                            "limit" => 1
-                        ]);
-                        $rt_duplicate_result = '@' . $db->fetch_field($rt_disposablemails_duplicate_check, 'filter');
+                    // Set cache lock so we don't query db
+                    $cache->update('rt_disposablemails_locked', 1);
 
-                        // Skip duplicate entries but still we query them above to check whether they exist, too many queries!
-                        if ($rt_duplicate_result === $row)
-                        {
-                            continue;
-                        }
+                    RT_DisposableMails::save_mail_list($api);
 
-                        // Insert new stuff
-                        $db->insert_query('banfilters', [
-                            'filter' => $row,
-                            'dateline' => TIME_NOW,
-                            'type' => 3,
-                        ]);
-                    }
-                    $cache->update_bannedemails();
+                    $cache->delete('rt_disposablemails_locked');
                 }
             }
         }
