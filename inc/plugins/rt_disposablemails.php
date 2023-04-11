@@ -87,12 +87,11 @@ class RT_DisposableMails
         'website' => 'https://github.com/RevertIT/mybb-rt_disposablemails',
         'author' => 'RevertIT',
         'authorsite' => 'https://github.com/RevertIT/',
-        'version' => '1.0',
+        'version' => '1.1',
         'compatibility' => '18*',
         'codename' => 'rt_disposablemails',
         'prefix' => 'rt_disposablemails',
     ];
-
 
     /**
      * Get plugin details
