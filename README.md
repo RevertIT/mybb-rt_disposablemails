@@ -39,13 +39,13 @@ RT Disposable Mails is a plugin which checks an external API to retrieve filtere
 2. _Optional:_ Delete all the RT Disposable Mails plugin files from your MyBB folder.
 
 ### 💡 Feature request
-Open a new idea by [clicking here](https://github.com/RevertIT/mybb-disposablemails/discussions/new?category=ideas)
+Open a new idea by [clicking here](https://github.com/RevertIT/mybb-rt_disposablemails/discussions/new?category=ideas)
 
 ### 🙏 Questions
-Open a new question by [clicking here](https://github.com/RevertIT/mybb-disposablemails/discussions/new?category=q-a)
+Open a new question by [clicking here](https://github.com/RevertIT/mybb-rt_disposablemails/discussions/new?category=q-a)
 
 ### 🐞 Bug reports
-Open a new bug report by [clicking here](https://github.com/RevertIT/mybb-disposablemails/issues/new)
+Open a new bug report by [clicking here](https://github.com/RevertIT/mybb-rt_disposablemails/issues/new)
 
 ### 📷 Preview
 <img src="https://i.postimg.cc/yY85mcQv/rt1.png" alt="ss1"/>
