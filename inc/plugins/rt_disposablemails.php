@@ -93,7 +93,6 @@ class RT_DisposableMails
         'prefix' => 'rt_disposablemails',
     ];
 
-
     /**
      * Get plugin details
      *
