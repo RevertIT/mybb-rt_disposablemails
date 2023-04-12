@@ -320,7 +320,7 @@ class RT_DisposableMails
                     "value" => 1
                 ],
                 "disable_login" => [
-                    "title" => "Prevent guests from logging with banned/temporary mails",
+                    "title" => "Prevent guests from logging with banned/temporary mail",
                     "description" => "This option will prevent guests from logging with temporary mail",
                     "optionscode" => "yesno",
                     "value" => 0
