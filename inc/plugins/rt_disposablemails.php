@@ -23,7 +23,6 @@ RT_DisposableMails::autoload_plugin_hooks([
     'RT_DisposableMails_BackEnd'
 ]);
 
-print_r($cache->read(RT_DisposableMails::get_plugin_info('prefix') . '_total_chunks'));
 function rt_disposablemails_info(): array
 {
     return [
