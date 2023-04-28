@@ -25,16 +25,9 @@ RT_DisposableMails::autoload_plugin_hooks([
 
 function rt_disposablemails_info(): array
 {
-    return [
-        'name' => RT_DisposableMails::get_plugin_info('name'),
-        'description' => RT_DisposableMails::get_plugin_description(),
-        'website' => RT_DisposableMails::get_plugin_info('website'),
-        'author' => RT_DisposableMails::get_plugin_info('author'),
-        'authorsite' => RT_DisposableMails::get_plugin_info('authorsite'),
-        'version' => RT_DisposableMails::get_plugin_info('version'),
-        'compatibility' => RT_DisposableMails::get_plugin_info('compatibility'),
-        'codename' => RT_DisposableMails::get_plugin_info('codename'),
-    ];
+    RT_DisposableMails::set_plugin_description();
+
+    return RT_DisposableMails::$PLUGIN_DETAILS;
 }
 
 function rt_disposablemails_install(): void
@@ -82,32 +75,16 @@ class RT_DisposableMails
         2 => 'https://raw.githubusercontent.com/RevertIT/disposable-email-domains/master/index.json'
     ];
 
-    private const PLUGIN_DETAILS = [
+    public static array $PLUGIN_DETAILS = [
         'name' => 'RT Disposable Mails',
         'website' => 'https://github.com/RevertIT/mybb-rt_disposablemails',
         'author' => 'RevertIT',
         'authorsite' => 'https://github.com/RevertIT/',
-        'version' => '1.3',
+        'version' => '1.4',
         'compatibility' => '18*',
         'codename' => 'rt_disposablemails',
         'prefix' => 'rt_disposablemails',
     ];
-
-    /**
-     * Get plugin details
-     *
-     * @param string $info Plugin info to return
-     * @return string|null
-     */
-    public static function get_plugin_info(string $info): ?string
-    {
-        if (isset(self::PLUGIN_DETAILS[$info]))
-        {
-            return self::PLUGIN_DETAILS[$info];
-        }
-
-        return null;
-    }
 
     /**
      * Autoload plugin hooks
@@ -138,9 +115,9 @@ class RT_DisposableMails
     /**
      * Plugin description
      *
-     * @return string
+     * @return void
      */
-    public static function get_plugin_description(): string
+    public static function set_plugin_description(): void
     {
         global $mybb, $db, $lang;
 
@@ -175,7 +152,7 @@ class RT_DisposableMails
 
             if (!empty($row))
             {
-                return <<<DISCLAIMER
+                $plugin_description = <<<DISCLAIMER
 				{$plugin_description}
 				{$lang->rt_disposablemails_plugin_description_disclaimer}
 				DISCLAIMER;
@@ -184,10 +161,10 @@ class RT_DisposableMails
 
         if (rt_disposablemails_is_installed() === true)
         {
-            return $plugin_description_extra;
+            $plugin_description = $plugin_description_extra;
         }
 
-        return $plugin_description;
+        self::$PLUGIN_DETAILS['description'] = $plugin_description;
     }
 
     /**
@@ -216,9 +193,10 @@ class RT_DisposableMails
     {
         global $cache;
 
-        $current = $cache->read(self::PLUGIN_DETAILS['prefix']);
+        $current = $cache->read(self::$PLUGIN_DETAILS['prefix']);
 
-        if (!empty($current) && self::is_installed() && (version_compare(self::PLUGIN_DETAILS['version'], $current['version'], '>') || version_compare(self::PLUGIN_DETAILS['version'], $current['version'], '<')))
+        if (!empty($current) && self::is_installed() &&
+            (version_compare(self::$PLUGIN_DETAILS['version'], $current['version'], '>') || version_compare(self::$PLUGIN_DETAILS['version'], $current['version'], '<')))
         {
             return false;
         }
@@ -262,13 +240,13 @@ class RT_DisposableMails
             }
             if (version_compare((string) $PL->version, '13', '<'))
             {
-                flash_message("PluginLibrary version is outdated, please update the plugin.", "error");
+                flash_message("PluginLibrary version is outdated. You can update it by <a href=\"https://community.mybb.com/mods.php?action=view&pid=573\">clicking here</a>.", "error");
                 admin_redirect("index.php?module=config-plugins");
             }
         }
         else
         {
-            flash_message("PluginLibrary is missing.", "error");
+            flash_message("PluginLibrary is missing. You can download it by <a href=\"https://community.mybb.com/mods.php?action=view&pid=573\">clicking here</a>.", "error");
             admin_redirect("index.php?module=config-plugins");
         }
     }
@@ -339,7 +317,6 @@ class RT_DisposableMails
         global $PL;
 
         $PL->settings_delete('rt_disposablemails', true);
-
     }
 
     /**
@@ -351,9 +328,9 @@ class RT_DisposableMails
     {
         global $cache;
 
-        if (!empty(self::PLUGIN_DETAILS))
+        if (!empty(self::$PLUGIN_DETAILS))
         {
-            $cache->update(self::PLUGIN_DETAILS['prefix'], self::PLUGIN_DETAILS);
+            $cache->update(self::$PLUGIN_DETAILS['prefix'], self::$PLUGIN_DETAILS);
         }
     }
 
@@ -366,9 +343,9 @@ class RT_DisposableMails
     {
         global $cache;
 
-        if (!empty($cache->read(self::PLUGIN_DETAILS['prefix'])))
+        if (!empty($cache->read(self::$PLUGIN_DETAILS['prefix'])))
         {
-            $cache->delete(self::PLUGIN_DETAILS['prefix'], true);
+            $cache->delete(self::$PLUGIN_DETAILS['prefix'], true);
         }
     }
 
@@ -423,9 +400,9 @@ class RT_DisposableMails
     /**
      * Read cached data in array chunks
      *
-     * @return mixed
+     * @return array
      */
-    private static function read_cached_data(): mixed
+    private static function read_cached_data(): array
     {
         global $cache;
 
