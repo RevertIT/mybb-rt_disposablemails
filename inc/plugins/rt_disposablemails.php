@@ -25,12 +25,12 @@ require MYBB_ROOT . 'inc/plugins/rt_disposablemails/src/Hooks/Frontend.php';
 // Hooks manager
 if(defined('IN_ADMINCP'))
 {
-	require MYBB_ROOT . 'inc/plugins/rt_disposablemails/src/Hooks/Backend.php';
+    require MYBB_ROOT . 'inc/plugins/rt_disposablemails/src/Hooks/Backend.php';
 }
 
 \rt\DisposableMails\autoload_plugin_hooks([
     '\rt\DisposableMails\Frontend',
-	'\rt\DisposableMails\Backend',
+    '\rt\DisposableMails\Backend',
 ]);
 
 function rt_disposablemails_info(): array
@@ -42,10 +42,10 @@ function rt_disposablemails_info(): array
 
 function rt_disposablemails_install(): void
 {
-   	\rt\DisposableMails\check_php_version();
-	\rt\DisposableMails\load_pluginlibrary();
+    \rt\DisposableMails\check_php_version();
+    \rt\DisposableMails\load_pluginlibrary();
 
-	\rt\DisposableMails\Core::add_database_modifications();
+    \rt\DisposableMails\Core::add_database_modifications();
     \rt\DisposableMails\Core::add_settings();
     \rt\DisposableMails\Core::set_cache();
 }
@@ -57,18 +57,18 @@ function rt_disposablemails_is_installed(): bool
 
 function rt_disposablemails_uninstall(): void
 {
-	\rt\DisposableMails\check_php_version();
-	\rt\DisposableMails\load_pluginlibrary();
+    \rt\DisposableMails\check_php_version();
+    \rt\DisposableMails\load_pluginlibrary();
 
-	\rt\DisposableMails\Core::remove_database_modifications();
+    \rt\DisposableMails\Core::remove_database_modifications();
     \rt\DisposableMails\Core::remove_settings();
     \rt\DisposableMails\Core::remove_cache();
 }
 
 function rt_disposablemails_activate(): void
 {
-	\rt\DisposableMails\check_php_version();
-	\rt\DisposableMails\load_pluginlibrary();
+    \rt\DisposableMails\check_php_version();
+    \rt\DisposableMails\load_pluginlibrary();
 
     \rt\DisposableMails\Core::add_settings();
     \rt\DisposableMails\Core::set_cache();
@@ -76,6 +76,6 @@ function rt_disposablemails_activate(): void
 
 function rt_disposablemails_deactivate(): void
 {
-	\rt\DisposableMails\check_php_version();
-	\rt\DisposableMails\load_pluginlibrary();
+    \rt\DisposableMails\check_php_version();
+    \rt\DisposableMails\load_pluginlibrary();
 }
