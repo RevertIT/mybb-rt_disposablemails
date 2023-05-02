@@ -23,6 +23,8 @@ RT Disposable Mails is a plugin which checks an external API to retrieve filtere
 - Using strict typing declaration.
 - Select API provider to use for Disposable/Spam mails source
 - Set time when task will run (in days)
+- Log actions of used blacklisted emails
+- Statistic page
 - Option to disable forum for users while task is running.
 - Safety checks will be shown while task is running to let you know not to uninstall/deactivate plugin.
 - Prevent users with disposable mail to register
