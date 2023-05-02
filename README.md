@@ -58,3 +58,5 @@ Open a new bug report by [clicking here](https://github.com/RevertIT/mybb-rt_dis
 ### 📷 Preview
 <img src="https://i.postimg.cc/yY85mcQv/rt1.png" alt="ss1"/>
 <img src="https://i.postimg.cc/m2pn8kKR/rt2.png" alt="ss2"/>
+<img src="https://i.postimg.cc/13608vvL/ss1.png" alt="ss1"/>
+<img src="https://i.postimg.cc/0NsYD73r/ss2.png" alt="ss1"/>
