@@ -18,20 +18,29 @@ if (!defined("IN_MYBB"))
     die("Direct initialization of this file is not allowed.");
 }
 
-require MYBB_ROOT . 'inc/plugins/rt_disposablemails/src/functions.php';
-require MYBB_ROOT . 'inc/plugins/rt_disposablemails/src/Core.php';
-require MYBB_ROOT . 'inc/plugins/rt_disposablemails/src/Hooks/Frontend.php';
+// Autoload classes
+require_once MYBB_ROOT . 'inc/plugins/rt/vendor/autoload.php';
 
+\rt\Autoload\psr4_autoloader(
+    'rt',
+    'src',
+    'rt\\DisposableMails\\',
+    [
+        'rt/DisposableMails/functions.php',
+    ]
+);
+
+$hooks = [];
 // Hooks manager
-if(defined('IN_ADMINCP'))
+if (defined('IN_ADMINCP'))
 {
-    require MYBB_ROOT . 'inc/plugins/rt_disposablemails/src/Hooks/Backend.php';
+    $hooks[] = '\rt\DisposableMails\Hooks\Backend';
 }
+$hooks[] = '\rt\DisposableMails\Hooks\Frontend';
 
-\rt\DisposableMails\autoload_plugin_hooks([
-    '\rt\DisposableMails\Frontend',
-    '\rt\DisposableMails\Backend',
-]);
+
+// Autoload plugin hooks
+\rt\DisposableMails\autoload_plugin_hooks($hooks);
 
 function rt_disposablemails_info(): array
 {

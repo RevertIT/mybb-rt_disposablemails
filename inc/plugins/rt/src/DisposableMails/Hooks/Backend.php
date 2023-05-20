@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace rt\DisposableMails;
+namespace rt\DisposableMails\Hooks;
 
 final class Backend
 {

@@ -26,7 +26,7 @@ class Core
         'website' => 'https://github.com/RevertIT/mybb-rt_disposablemails',
         'author' => 'RevertIT',
         'authorsite' => 'https://github.com/RevertIT/',
-        'version' => '1.5',
+        'version' => '1.6',
         'compatibility' => '18*',
         'codename' => 'rt_disposablemails',
         'prefix' => 'rt_disposablemails',

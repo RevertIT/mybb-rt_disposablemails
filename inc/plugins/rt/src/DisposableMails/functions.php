@@ -31,11 +31,11 @@ function autoload_plugin_hooks(array $class): void
             continue;
         }
 
-        $user_functions = get_class_methods(new $hook());
+        $class_methods = get_class_methods(new $hook());
 
-        foreach ($user_functions as $function)
+        foreach ($class_methods as $method)
         {
-            $plugins->add_hook($function, [new $hook(), $function]);
+            $plugins->add_hook($method, [new $hook(), $method]);
         }
     }
 }
