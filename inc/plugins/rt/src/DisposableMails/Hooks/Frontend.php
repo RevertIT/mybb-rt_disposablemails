@@ -38,6 +38,31 @@ final class Frontend
     }
 
     /**
+     * @return void
+     */
+    public function xmlhttp_email_availability(): void
+    {
+        global $mybb, $lang;
+
+        $lang->load('rt_disposablemails');
+
+        if (isset($mybb->settings['rt_disposablemails_disable_register']) && (int) $mybb->settings['rt_disposablemails_disable_register'] === 1)
+        {
+            if (!empty($mybb->get_input('email')))
+            {
+                if (\rt\DisposableMails\Core::is_banned_email($mybb->get_input('email')))
+                {
+                    \rt\DisposableMails\Core::insert_log($mybb->get_input('email'), 2);
+                    $error = $lang->sprintf($lang->rt_disposablemails_prevent_registration, $mybb->get_input('email'));
+
+                    echo json_encode($error);
+                    exit;
+                }
+            }
+        }
+    }
+
+    /**
      * Hook: member_do_register_start
      *
      * @return void

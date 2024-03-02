@@ -96,7 +96,8 @@ final class Backend
 				SELECT
 					COUNT(*) AS `count`,
 					DATE_FORMAT(FROM_UNIXTIME(dateline),
-					'%M %d, %Y') AS `day`
+					'%M %d, %Y') AS `day`,
+				    `dateline`
 				FROM
 					{$sql_table}
 				GROUP BY
@@ -111,7 +112,8 @@ final class Backend
 				SELECT
 					COUNT(*) AS `count`,
 					DATE_FORMAT(FROM_UNIXTIME(dateline),
-					'%M %d, %Y') AS `day`
+					'%M %d, %Y') AS `day`,
+				    `dateline`
 				FROM
 					{$sql_table}
 				WHERE
@@ -128,7 +130,8 @@ final class Backend
 				SELECT
 					COUNT(*) AS `count`,
 					DATE_FORMAT(FROM_UNIXTIME(dateline),
-					'%M %d, %Y') AS `day`
+					'%M %d, %Y') AS `day`,
+				    `dateline`
 				FROM
 					{$sql_table}
 				WHERE
